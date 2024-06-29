@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="https://demos.telerik.com/kendo-ui/tabstrip/index">
+    <style>html { font-size: 14px; font-family: Arial, Helvetica, sans-serif; }</style>
+    <title></title>
+    <link href="https://kendo.cdn.telerik.com/themes/8.0.1/default/default-main.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    
+    <script src="https://kendo.cdn.telerik.com/2024.2.514/js/kendo.all.min.js"></script>
+</head>
+<body>
+    <div id="example">
+        <div class="demo-section">
+                <div id="tabstrip">
+                    <ul>
+                        <li class="k-active">
+                            لیست فیلم
+                        </li>
+                        <li>
+                           کارگردان
+                        </li>
+                        
+                    </ul>
+                    <div id="grid"></div>
+                    <div id="kargardan"></div>
+                </div>
+        </div>
+
+
+        <script>
+             var sampleData = [
+            {MovieId: 1, MovieName: "TrueDetective",Genre: "Crime", Enteshar: new Date(2013, 8, 10),Ekran: false,Kargardan:"Nolan"},
+            {MovieId: 2, MovieName: "SpiderMan",Genre:"Sci-Fi", Enteshar: new Date(2014, 2, 25),Ekran: false,Kargardan:"Tarantino"},
+            {MovieId: 3, MovieName: "Batman",Genre:"Sci-Fi" ,Enteshar: new Date(2008, 10, 2),Ekran: true,Kargardan:"GuyRichi"}
+        ];
+
+        var KargardanData = [
+            {KargardanId: 1, KargardanName: "Nolan"},
+            {KargardanId: 2, KargardanName: "MMD"},
+            {KargardanId: 3, KargardanName: "Akbar"}
+        ];
+
+
+        // Custom logic start.
+        var sampleDataNextID = sampleData.length + 1;
+        var KargardanDataNextID = KargardanData.length +1;
+
+        function getKargardanIndexById(id) {
+            var idx,
+                l = KargardanData.length;
+
+            for (var j=0; j < l; j++) {
+                if (KargardanData[j].KargardanId == id) {
+                    return j;
+                }
+            }
+            return null;
+        }
+
+        function getIndexById(id) {
+            var idx,
+                l = sampleData.length;
+
+            for (var j=0; j < l; j++) {
+                if (sampleData[j].MovieId == id) {
+                    return j;
+                }
+            }
+            return null;
+        }
+        
+
+            $(document).ready(function() {
+                $("#tabstrip").kendoTabStrip({
+                    animation:  {
+                        open: {
+                            effects: "fadeIn"
+                        }
+                    }
+                });
+
+
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: function (e) {
+                        // On success.
+                        e.success(sampleData);
+                        // On failure.
+                        //e.error("XHR response", "status code", "error message");
+                    },
+                    create: function (e) {
+                        // Assign an ID to the new item.
+                        e.data.MovieId = sampleDataNextID++;
+                        // Save data item to the original datasource.
+                        sampleData.push(e.data);
+                        // On success.
+                        e.success(e.data);
+                        // On failure.
+                        //e.error("XHR response", "status code", "error message");
+                    },
+                    update: function (e) {
+                        // Locate item in original datasource and update it.
+                        sampleData[getIndexById(e.data.MovieId)] = e.data;
+                        // On success.
+                        e.success();
+                        // On failure.
+                        // e.error("XHR response", "status code", "error message");
+                    },
+                    destroy: function (e) {
+                        // Locate item in original datasource and remove it.
+                        sampleData.splice(getIndexById(e.data.MovieId), 1);
+                        // On success.
+                        e.success();
+                        // On failure.
+                        // e.error("XHR response", "status code", "error message");
+                    }
+                },
+                error: function (e) {
+                    // Handle data operation error.
+                    alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                },
+                pageSize: 10,
+                batch: false,
+                schema: {
+                    model: {
+                        id: "MovieId",
+                        fields: {
+                            MovieId: { editable: false, nullable: true },
+                            MovieName: { validation: { required: false } },
+                            Genre: { validation: { required: false } },
+                            Enteshar: { type: "date" },
+                            Ekran: { type: "boolean" },
+                            Kargardan: { validation: { required: false } }
+                        }
+                    }
+                }
+            });
+
+            
+            var KargardanDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: function (e) {
+                        // On success.
+                        e.success(KargardanData);
+                        // On failure.
+                        //e.error("XHR response", "status code", "error message");
+                    },
+                    create: function (e) {
+                        // Assign an ID to the new item.
+                        e.data.KargardanId = KargardanDataNextID++;
+                        // Save data item to the original datasource.
+                        KargardanData.push(e.data);
+                        // On success.
+                        e.success(e.data);
+                        // On failure.
+                        //e.error("XHR response", "status code", "error message");
+                    },
+                    update: function (e) {
+                        // Locate item in original datasource and update it.
+                        KargardanData[getKargardanIndexById(e.data.KargardanId)] = e.data;
+                        // On success.
+                        e.success();
+                        // On failure.
+                        // e.error("XHR response", "status code", "error message");
+                    },
+                    destroy: function (e) {
+                        // Locate item in original datasource and remove it.
+                        sampleData.splice(getIndexById(e.data.KargardanId), 1);
+                        // On success.
+                        e.success();
+                        // On failure.
+                        // e.error("XHR response", "status code", "error message");
+                    }
+                },
+                error: function (e) {
+                    // Handle data operation error.
+                    alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                },
+                pageSize: 10,
+                batch: false,
+                schema: {
+                    model: {
+                        id: "KargardanId",
+                        fields: {
+                            KargardanId: { editable: false, nullable: true },
+                            KargardanName: { validation: { required: false } }
+                        }
+                    }
+                }
+            });
+
+
+            $("#grid").kendoGrid({
+                dataSource: dataSource,
+                pageable: true,
+                editable:{
+                    mode:"inline"
+                },
+                toolbar: ["create"],
+                columns: [
+                    { field: "MovieName", title: "فیلم" },
+                    { field: "Genre", title: "ژانر" },
+                    { field: "Enteshar", title: "تاریخ انتشار", format: "{0:yyyy/MM/dd}", width: "200px" },
+                    { field: "Ekran", title:"اکران", width: "120px" },
+                    { field: "Kargardan", title: "کارگردان ",width:100,
+                editor:function(container,options){
+                debugger;
+    let input=$("<input name="+options.field+" type='text'/>")
+    .appendTo(container).kendoComboBox({
+        dataTextField:"KargardanName",
+        dataValueField:"KargardanName",
+        dataSource:KargardanData,
+        filter:"contains"
+    });
+}
+
+                    },
+
+                    { command: ["edit", "destroy"], title: "تغییرات", width: "200px" }
+                    
+                ],
+                editable: "inline"
+            });
+
+            $("#kargardan").kendoGrid({
+                dataSource: KargardanDataSource,
+                pageable: true,
+                toolbar: ["create"],
+                columns: [
+                    { field: "KargardanName", title: "کارگردان "},
+                    { command: ["edit", "destroy"], title: "تغییرات", width: "200px" }
+                ],
+                editable: "inline"
+            });
+
+            });
+
+            
+
+
+        </script>
+</body>
+</html>
